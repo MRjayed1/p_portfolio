@@ -96,6 +96,10 @@ body {
   @apply relative px-1 py-4 text-sm text-center rounded-full font-extralight bg-primary w-[12rem] cursor-pointer overflow-hidden;
 }
 
+.gooey-btn {
+  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.10);
+}
+
 /* About Section */
 .grid-1 {
   @apply row-span-2 md:col-span-3 h-[15rem] md:h-full relative overflow-hidden hover:-translate-y-1 duration-200;
