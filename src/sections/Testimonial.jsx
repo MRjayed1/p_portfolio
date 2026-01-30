@@ -1,8 +1,6 @@
 import { twMerge } from "tailwind-merge";
 import Marquee from "../components/Marquee";
-import { reviews } from "../constants";
-const firstRow = reviews.slice(0, reviews.length / 2);
-const secondRow = reviews.slice(reviews.length / 2);
+import { usePortfolio } from "../context/PortfolioContext";
 
 const ReviewCard = ({ img, name, username, body }) => {
   return (
@@ -32,6 +30,13 @@ const ReviewCard = ({ img, name, username, body }) => {
 };
 
 export default function Testimonial() {
+  const { testimonials } = usePortfolio();
+
+  if (!testimonials || testimonials.length === 0) return null;
+
+  const firstRow = testimonials.slice(0, Math.ceil(testimonials.length / 2));
+  const secondRow = testimonials.slice(Math.ceil(testimonials.length / 2));
+
   return (
     <div className="items-start mt-25 md:mt-35 c-space">
       <h2 className="text-heading">Hear From My Clients</h2>

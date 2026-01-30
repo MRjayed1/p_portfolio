@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meal Tracking System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background-color: white;
+            padding: 20px;
+            border: 2px solid #000;
+        }
+        
+        /* Month Calendar Grid */
+        .month-section {
+            margin-bottom: 20px;
+        }
+        
+        .month-header {
+            display: flex;
+            border: 2px solid #000;
+            background-color: #e6e6e6;
+        }
+        
+        .month-label {
+            background-color: #e6e6e6;
+            border-right: 2px solid #000;
+            padding: 8px 12px;
+            font-weight: bold;
+            width: 80px;
+            text-align: center;
+        }
+        
+        .day-cell {
+            border-right: 1px solid #000;
+            padding: 8px 4px;
+            text-align: center;
+            font-size: 12px;
+            width: 25px;
+            background-color: #e6e6e6;
+        }
+        
+        .day-cell:last-child {
+            border-right: none;
+        }
+        
+        /* Member rows */
+        .member-row {
+            display: flex;
+            border-left: 2px solid #000;
+            border-right: 2px solid #000;
+            border-bottom: 1px solid #000;
+        }
+        
+        .member-name {
+            background-color: #e6e6e6;
+            border-right: 2px solid #000;
+            padding: 8px 12px;
+            font-weight: bold;
+            width: 80px;
+            font-style: italic;
+        }
+        
+        .meal-cell {
+            border-right: 1px solid #000;
+            padding: 8px 4px;
+            width: 25px;
+            background-color: white;
+        }
+        
+        .meal-cell:last-child {
+            border-right: none;
+        }
+        
+        /* Special styling for specific members */
+        .member-row:nth-child(2) .member-name { /* Jayed */
+            background-color: #7fffd4;
+        }
+        
+        .member-row:nth-child(5) .member-name { /* Shadman */
+            font-size: 11px;
+        }
+        
+        /* Payment table */
+        .payment-section {
+            margin: 30px 0;
+        }
+        
+        .payment-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 2px solid #000;
+        }
+        
+        .payment-table th {
+            background-color: #e6e6e6;
+            border: 2px solid #000;
+            padding: 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .payment-table td {
+            border: 2px solid #000;
+            padding: 10px;
+            background-color: white;
+        }
+        
+        .payment-table tr td:first-child {
+            background-color: white;
+        }
+        .payment-table tr:nth-child(2) td:first-child { /* Jayed */
+            background-color: #7fffd4;
+        }
+        
+        /* Calculation boxes */
+        .calculation-section {
+            margin-top: 30px;
+        }
+        
+        .calc-box {
+            border: 2px solid #000;
+            background-color: white;
+            padding: 10px 15px;
+            margin: 5px 0;
+            font-weight: bold;
+        }
+        
+        .calc-box:first-child {
+            margin-top: 0;
+        }
+        
+        /* Totals column */
+        .totals-header {
+            background-color: #e6e6e6;
+            border-left: 2px solid #000;
+            padding: 8px 4px;
+            text-align: center;
+            font-size: 11px;
+            width: 40px;
+        }
+        
+        .totals-cell {
+            border-left: 2px solid #000;
+            padding: 8px 4px;
+            width: 40px;
+            background-color: white;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Month Calendar Section -->
+        <div class="month-section">
+            <!-- Header with days -->
+            <div class="month-header">
+                <div class="month-label">Month:</div>
+                <div class="day-cell">1</div>
+                <div class="day-cell">2</div>
+                <div class="day-cell">3</div>
+                <div class="day-cell">4</div>
+                <div class="day-cell">5</div>
+                <div class="day-cell">6</div>
+                <div class="day-cell">7</div>
+                <div class="day-cell">8</div>
+                <div class="day-cell">9</div>
+                <div class="day-cell">10</div>
+                <div class="day-cell">11</div>
+                <div class="day-cell">12</div>
+                <div class="day-cell">13</div>
+                <div class="day-cell">14</div>
+                <div class="day-cell">15</div>
+                <div class="day-cell">16</div>
+                <div class="day-cell">17</div>
+                <div class="day-cell">18</div>
+                <div class="day-cell">19</div>
+                <div class="day-cell">20</div>
+                <div class="day-cell">21</div>
+                <div class="day-cell">22</div>
+                <div class="day-cell">23</div>
+                <div class="day-cell">24</div>
+                <div class="day-cell">25</div>
+                <div class="day-cell">26</div>
+                <div class="day-cell">27</div>
+                <div class="day-cell">28</div>
+                <div class="day-cell">29</div>
+                <div class="day-cell">30</div>
+                <div class="day-cell">31</div>
+                <div class="totals-header">Totals</div>
+            </div>
+            
+            <!-- Member rows -->
+            <div class="member-row">
+                <div class="member-name">Jayed</div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="totals-cell"></div>
+            </div>
+            
+            <div class="member-row">
+                <div class="member-name">Tushar</div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="totals-cell"></div>
+            </div>
+            
+            <div class="member-row">
+                <div class="member-name">Sakib</div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="totals-cell"></div>
+            </div>
+            
+            <div class="member-row">
+                <div class="member-name">Zisan</div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="totals-cell"></div>
+            </div>
+            
+            <div class="member-row">
+                <div class="member-name">Shadman</div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="totals-cell"></div>
+            </div>
+            
+            <div class="member-row">
+                <div class="member-name">Sayem</div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="totals-cell"></div>
+            </div>
+            
+            <div class="member-row">
+                <div class="member-name">Moon</div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="meal-cell"></div>
+                <div class="totals-cell"></div>
+            </div>
+            
+            
+        </div>
+        
+        <!-- Payment Section -->
+        <div class="payment-section">
+            <table class="payment-table">
+                <tr>
+                    <th>Members</th>
+                    <th>Paid</th>
+                    <th>Due</th>
+                    <th>Present Balance</th>
+                </tr>
+                <tr>
+                    <td>Jayed</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Tushar</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Sakib Nur</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Zisan</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Shadman</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Sayem</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Moon</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                
+            </table>
+        </div>
+        
+        <!-- Calculation Section -->
+        <div class="calculation-section">
+            <div class="calc-box">Total Meal Expenses=</div>
+            <div class="calc-box">Total Meals=</div>
+            <div class="calc-box">Meal Rate=</div>
+        </div>
+    </div>
+</body>
+</html>

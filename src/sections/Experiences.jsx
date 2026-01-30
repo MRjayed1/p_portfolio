@@ -1,6 +1,8 @@
 import { Timeline } from "../components/Timeline";
-import { experiences } from "../constants";
+import { usePortfolio } from "../context/PortfolioContext";
+
 const Experiences = () => {
+  const { experiences } = usePortfolio();
   return (
     <div className="w-full">
       <Timeline data={experiences} />

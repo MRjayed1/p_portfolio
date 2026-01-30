@@ -2,6 +2,8 @@ import { useState } from "react";
 import emailjs from "@emailjs/browser";
 import Alert from "../components/Alert";
 import { Particles } from "../components/Particles";
+import { submitContactMessage } from "../services/api";
+
 const Contact = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -28,26 +30,47 @@ const Contact = () => {
     setIsLoading(true);
 
     try {
-      console.log("From submitted:", formData);
-      await emailjs.send(
-        "service_79b0nyj",
-        "template_zx6fhsl",
-        {
-          from_name: formData.name,
-          to_name: "Jayed",
-          from_email: formData.email,
-          to_email: "noyonahmed45678@gmail.com",
-          message: formData.message,
-        },
-        "TXS8Nq2xIo17-siDN"
-      );
+      // 1. Save to Database
+      console.log("Saving message to database...");
+      await submitContactMessage(formData);
+      console.log("Message saved to database.");
+
+      // 2. Send Email via EmailJS
+      console.log("Sending email via EmailJS...");
+      try {
+        const result = await emailjs.send(
+          "service_79b0nyj",
+          "template_zx6fhsl",
+          {
+            from_name: formData.name,
+            to_name: "Jayed",
+            from_email: formData.email,
+            to_email: "noyonahmed45678@gmail.com",
+            message: formData.message,
+          },
+          "TXS8Nq2xIo17-siDN"
+        );
+        console.log("Email sent successfully:", result);
+        showAlertMessage("success", "Your message has been sent and saved!");
+      } catch (emailError) {
+        console.error("FAILED to send email:", emailError);
+        showAlertMessage("warning", "Message saved, but failed to send email. Check console.");
+      }
+
       setIsLoading(false);
       setFormData({ name: "", email: "", message: "" });
-      showAlertMessage("success", "You message has been sent!");
     } catch (error) {
       setIsLoading(false);
-      console.log(error);
-      showAlertMessage("danger", "Somthing went wrong!");
+      console.error("Database Save Error:", error);
+      let errorMessage = "Something went wrong!";
+      if (error.response) {
+        errorMessage = error.response.data?.error || `Server Error: ${error.response.status}`;
+      } else if (error.request) {
+        errorMessage = "Network Error: Unable to reach server.";
+      } else {
+        errorMessage = error.message;
+      }
+      showAlertMessage("danger", errorMessage);
     }
   };
   return (

@@ -1,0 +1,79 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model About {
+  id          Int      @id @default(autoincrement())
+  name        String
+  title       String?
+  subTitle    String?
+  description String?
+  image       String?
+  location    String?
+  email       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Project {
+  id             Int      @id @default(autoincrement())
+  title          String
+  description    String
+  subDescription String[]
+  href           String?
+  logo           String?
+  image          String?
+  tags           Skill[]  @relation("ProjectSkills")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Skill {
+  id        Int       @id @default(autoincrement())
+  name      String
+  path      String?
+  projects  Project[] @relation("ProjectSkills")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Experience {
+  id        Int      @id @default(autoincrement())
+  title     String
+  company   String?
+  date      String
+  contents  String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Testimonial {
+  id        Int      @id @default(autoincrement())
+  name      String
+  username  String
+  body      String
+  img       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Social {
+  id        Int      @id @default(autoincrement())
+  name      String
+  href      String
+  icon      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ContactMessage {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  message   String
+  createdAt DateTime @default(now())
+}
