@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "motion/react";
+import { usePortfolio } from "../context/PortfolioContext";
 
 // SVG Gooey Filter (scoped to Navbar)
 const GooeySVGFilter = () => (
@@ -14,7 +15,7 @@ const GooeySVGFilter = () => (
   </svg>
 );
 
-function Navigation() {
+function Navigation({ cvUrl }) {
   const navLinks = [
     { href: "#home", label: "Home" },
     { href: "#about", label: "About" },
@@ -35,12 +36,25 @@ function Navigation() {
           {link.label}
         </a>
       ))}
+      {cvUrl && (
+        <a
+          href={cvUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="gooey-btn flex items-center justify-center w-12 h-12 rounded-full bg-indigo-600/80 text-white font-semibold shadow-lg transition-all duration-300 hover:scale-110 hover:bg-indigo-600/100 focus:outline-none"
+        >
+          CV
+        </a>
+      )}
     </div>
   );
 }
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { about } = usePortfolio();
+  const cvUrl = about?.cvUrl;
+
   return (
     <div className="fixed inset-x-0 z-20 w-full backdrop-blur-lg bg-primary/40">
       <GooeySVGFilter />
@@ -64,7 +78,7 @@ const Navbar = () => {
           </button>
           {/* Gooey Nav only on desktop */}
           <nav className="hidden sm:flex relative">
-            <Navigation />
+            <Navigation cvUrl={cvUrl} />
           </nav>
         </div>
       </div>
@@ -91,6 +105,11 @@ const Navbar = () => {
               <li className="nav-li">
                 <a className="nav-link" href="#contact">Contact</a>
               </li>
+              {cvUrl && (
+                <li className="nav-li">
+                  <a className="nav-link text-indigo-400" href={cvUrl} target="_blank" rel="noopener noreferrer">CV</a>
+                </li>
+              )}
             </ul>
           </nav>
         </motion.div>

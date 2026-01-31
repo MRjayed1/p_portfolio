@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const apiRoutes = require('./routes/api');
+const adminRoutes = require('./routes/admin');
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/api', apiRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.get('/', (req, res) => {
   res.send('Portfolio API is running');

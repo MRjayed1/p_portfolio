@@ -15,23 +15,24 @@ export const PortfolioProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const portfolioData = await getPortfolioData();
-        setData(portfolioData);
-      } catch (err) {
-        setError(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const portfolioData = await getPortfolioData();
+      setData(portfolioData);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchData();
   }, []);
 
   return (
-    <PortfolioContext.Provider value={{ ...data, loading, error }}>
+    <PortfolioContext.Provider value={{ ...data, loading, error, refreshData: fetchData }}>
       {children}
     </PortfolioContext.Provider>
   );

@@ -1,8 +1,18 @@
 import { FlipWords } from "./FlipWords";
 import { motion } from "motion/react";
+import { usePortfolio } from "../context/PortfolioContext";
 
 const HeroText = () => {
-  const words = ["Secure", "Modern", "Scalable"];
+  const { about } = usePortfolio();
+  
+  const words = (about?.heroFlipWords && about.heroFlipWords.length > 0) 
+    ? about.heroFlipWords 
+    : ["Secure", "Modern", "Scalable"];
+    
+  const hiddenText = about?.heroHiddenText || "Hi I'm Jayed";
+  const primaryText = about?.heroPrimaryText || "A Developer Dedicated to Crafting";
+  const secondaryText = about?.heroSecondaryText || "Web Solutions";
+
   const variants = {
     hidden: { opacity: 0, x: -50 },
     visible: { opacity: 1, x: 0 },
@@ -18,7 +28,7 @@ const HeroText = () => {
           animate="visible"
           transition={{ delay: 1 }}
         >
-          Hi I'm Jayed
+          {hiddenText}
         </motion.h1>
         <div className="flex flex-col items-start">
           <motion.p
@@ -28,7 +38,7 @@ const HeroText = () => {
             animate="visible"
             transition={{ delay: 1.2 }}
           >
-            A Developer <br /> Dedicated to Crafting
+            {primaryText} <br />
           </motion.p>
           <motion.div
             variants={variants}
@@ -48,7 +58,7 @@ const HeroText = () => {
             animate="visible"
             transition={{ delay: 1.8 }}
           >
-            Web Solutions
+            {secondaryText}
           </motion.p>
         </div>
       </div>
@@ -61,7 +71,7 @@ const HeroText = () => {
           animate="visible"
           transition={{ delay: 1 }}
         >
-          Hi,I'm Jayed
+          {hiddenText}
         </motion.p>
         <div>
           <motion.p
@@ -71,7 +81,7 @@ const HeroText = () => {
             animate="visible"
             transition={{ delay: 1.2 }}
           >
-            Building
+            {primaryText}
           </motion.p>
           <motion.div
             variants={variants}
@@ -91,7 +101,7 @@ const HeroText = () => {
             animate="visible"
             transition={{ delay: 1.8 }}
           >
-            Web Applications
+            {secondaryText}
           </motion.p>
         </div>
       </div>
