@@ -6,7 +6,7 @@ async function verify() {
   try {
     console.log('1. Logging in...');
     const loginRes = await axios.post(`${API_URL}/admin/login`, {
-      email: 'admin@example.com',
+      email: 'jayed08@gmail.com',
       password: 'password123'
     });
     const token = loginRes.data.token;

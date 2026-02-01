@@ -4,21 +4,21 @@ const path = require('path');
 const prisma = require('../lib/prisma');
 
 async function generateResume() {
-  console.log('Generating Resume...');
-
   try {
-    // 1. Fetch Data
-    const about = await prisma.about.findFirst();
-    const skills = await prisma.skill.findMany();
-    const experiences = await prisma.experience.findMany({ orderBy: { id: 'desc' } });
-    const projects = await prisma.project.findMany({ include: { tags: true }, orderBy: { id: 'asc' } });
+    console.log('Fetching data... (v2)');
+    const [about, experiences, projects, skills, socials] = await Promise.all([
+      prisma.about.findFirst(),
+      prisma.experience.findMany({ orderBy: { id: 'desc' } }), // Newest first
+      prisma.project.findMany({ include: { tags: true } }),
+      prisma.skill.findMany(),
+      prisma.social.findMany()
+    ]);
 
     if (!about) {
       console.error('No About data found!');
       return;
     }
 
-    // 2. Create PDF
     const doc = new PDFDocument({ margin: 50 });
     const outputPath = path.join(__dirname, '../../public/resume.pdf');
     const writeStream = fs.createWriteStream(outputPath);
@@ -26,81 +26,92 @@ async function generateResume() {
     doc.pipe(writeStream);
 
     // --- Header ---
-    doc.fontSize(25).text(about.name, { align: 'center' });
-    doc.fontSize(12).text(about.title, { align: 'center' });
-    doc.fontSize(10).text(`${about.location} | ${about.email}`, { align: 'center' });
-    doc.moveDown();
-    doc.moveDown();
-
-    // --- Profile ---
-    doc.fontSize(16).text('Profile', { underline: true });
+    doc.fontSize(24).font('Helvetica-Bold').text(about.name, { align: 'center' });
     doc.moveDown(0.5);
-    doc.fontSize(11).text(about.description || about.subTitle, { align: 'justify' });
-    doc.moveDown();
+    doc.fontSize(12).font('Helvetica').text(about.title, { align: 'center' });
+    
+    doc.moveDown(0.5);
+    const contactInfo = [
+      about.email,
+      about.location,
+      socials.map(s => s.href).join(' | ')
+    ].filter(Boolean).join(' • ');
+    
+    doc.fontSize(10).text(contactInfo, { align: 'center', color: 'grey' });
+    doc.moveDown(1.5);
+
+    // --- Summary ---
+    if (about.subTitle) {
+      doc.fontSize(14).font('Helvetica-Bold').fillColor('black').text('Professional Summary');
+      doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+      doc.moveDown(0.5);
+      doc.fontSize(10).font('Helvetica').text(about.subTitle, { align: 'justify' });
+      doc.moveDown(1.5);
+    }
 
     // --- Skills ---
-    doc.fontSize(16).text('Skills', { underline: true });
-    doc.moveDown(0.5);
-    const skillNames = skills.map(s => s.name).join(' • ');
-    doc.fontSize(11).text(skillNames);
-    doc.moveDown();
+    if (skills.length > 0) {
+      doc.fontSize(14).font('Helvetica-Bold').text('Skills');
+      doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+      doc.moveDown(0.5);
+      
+      const skillNames = skills.map(s => s.name).join(', ');
+      doc.fontSize(10).font('Helvetica').text(skillNames);
+      doc.moveDown(1.5);
+    }
 
     // --- Experience ---
-    doc.fontSize(16).text('Experience', { underline: true });
-    doc.moveDown(0.5);
-    experiences.forEach(exp => {
-      doc.fontSize(12).text(`${exp.title} at ${exp.company}`, { bold: true });
-      doc.fontSize(10).text(exp.date, { italic: true });
-      doc.moveDown(0.2);
-      if (exp.contents && exp.contents.length > 0) {
-        exp.contents.forEach(point => {
-          doc.text(`• ${point}`, { indent: 10 });
-        });
-      }
-      doc.moveDown();
-    });
+    if (experiences.length > 0) {
+      doc.fontSize(14).font('Helvetica-Bold').text('Work Experience');
+      doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+      doc.moveDown(0.5);
+
+      experiences.forEach(exp => {
+        doc.fontSize(12).font('Helvetica-Bold').text(exp.title, { continued: true });
+        doc.fontSize(10).font('Helvetica').text(`  |  ${exp.company || ''}`, { align: 'right' });
+        
+        doc.fontSize(10).font('Helvetica-Oblique').text(exp.date, { align: 'right' });
+        
+        if (exp.contents && exp.contents.length > 0) {
+            doc.moveDown(0.3);
+            exp.contents.forEach(point => {
+                doc.fontSize(10).font('Helvetica').text(`• ${point}`, { indent: 10, align: 'justify' });
+            });
+        }
+        doc.moveDown(1);
+      });
+      doc.moveDown(0.5);
+    }
 
     // --- Projects ---
-    doc.fontSize(16).text('Projects', { underline: true });
-    doc.moveDown(0.5);
-    projects.forEach(proj => {
-      doc.fontSize(12).text(proj.title, { bold: true });
-      if (proj.href) {
-        doc.fontSize(10).fillColor('blue').text(proj.href, { link: proj.href });
-        doc.fillColor('black');
-      }
-      doc.moveDown(0.2);
-      doc.fontSize(11).text(proj.description);
-      
-      // Tech stack
-      if (proj.tags && proj.tags.length > 0) {
-        doc.fontSize(10).text(`Tech: ${proj.tags.map(t => t.name).join(', ')}`, { italic: true });
-      }
-      doc.moveDown();
-    });
+    if (projects.length > 0) {
+      doc.fontSize(14).font('Helvetica-Bold').text('Projects');
+      doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+      doc.moveDown(0.5);
 
-    // End Document
+      projects.forEach(proj => {
+        doc.fontSize(12).font('Helvetica-Bold').text(proj.title);
+        if (proj.description) {
+            doc.fontSize(10).font('Helvetica').text(proj.description, { align: 'justify' });
+        }
+        
+        if (proj.tags && proj.tags.length > 0) {
+            doc.fontSize(9).font('Helvetica-Oblique').fillColor('grey').text(`Tech: ${proj.tags.map(t => t.name).join(', ')}`);
+            doc.fillColor('black');
+        }
+        doc.moveDown(0.8);
+      });
+    }
+
     doc.end();
 
-    // 3. Update Database with new URL
-    writeStream.on('finish', async () => {
-      console.log('PDF generated successfully at:', outputPath);
-      
-      // We want the URL to be relative to the public root
-      const publicUrl = '/resume.pdf'; 
-      
-      await prisma.about.update({
-        where: { id: about.id },
-        data: { cvUrl: publicUrl }
-      });
-      console.log(`Database updated. CV URL set to: ${publicUrl}`);
-      
-      // Disconnect
-      await prisma.$disconnect();
+    writeStream.on('finish', () => {
+      console.log(`Resume generated successfully at ${outputPath}`);
     });
 
   } catch (error) {
     console.error('Error generating resume:', error);
+  } finally {
     await prisma.$disconnect();
   }
 }

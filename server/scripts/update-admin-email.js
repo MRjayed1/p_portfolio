@@ -21,7 +21,16 @@ async function main() {
       if (newAdmin) {
           console.log(`Admin ${newEmail} already exists.`);
       } else {
-          console.log("No admin found to update.");
+          console.log("No admin found to update. Creating default admin.");
+          const bcrypt = require('bcryptjs');
+          const hashedPassword = await bcrypt.hash('password123', 10);
+          await prisma.admin.create({
+            data: {
+              email: newEmail,
+              password: hashedPassword
+            }
+          });
+          console.log(`Admin ${newEmail} created.`);
       }
     }
   } catch (error) {
