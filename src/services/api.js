@@ -14,6 +14,7 @@ export const getPortfolioData = async () => {
     return response.data;
   } catch (error) {
     console.error('Error fetching portfolio data:', error);
+    // If we're offline or server is down, we could return fallback data here
     throw error;
   }
 };
